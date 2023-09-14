@@ -2,30 +2,44 @@ import os
 import threading
 import time
 import sys
-
-def read_shared_resource(name):
-    s.acquire()
-    print('Reading shared resource from %s' % name)
-    time.sleep(2)
-    s.release()
+from random import randrange
 
 
-def print_process_id():
-    name = threading.current_thread().name.split(' ')[0]
-    print(name, "PID:", os.getpid())
-    read_shared_resource(name)
+def philosopher(philosopherNumber, chopsticks, thinkFunction=lambda a : think(a), eatFunction=lambda a : eat(a)) :
+    while True:
+        thinkFunction(philosopherNumber)
+        takeChopsticks(philosopherNumber, chopsticks)
+        eatFunction(philosopherNumber)                 
+        releaseChopsticks(philosopherNumber, chopsticks)
 
-def main(processes, semaphores):
-    global s
-    s = threading.Semaphore(semaphores)
-    for i in range(processes):
-        threading.Thread(target=print_process_id).start()
+def think(philosopherNumber):
+    randomlyTimedSpacedphilosopheraction(philosopherNumber, "will think", "thinking")
+
+def eat(philosopherNumber):
+    randomlyTimedSpacedphilosopheraction(philosopherNumber, "will eat", "eating")
+
+def randomlyTimedSpacedphilosopheraction(philosopherNumber, actionName, actionFinishName):
+    secondsToSleep = randrange(1, 9)
+    print("Philosopher", philosopherNumber, actionName, "for", secondsToSleep, "seconds")
+    time.sleep(secondsToSleep)
+    print("Philosopher", philosopherNumber, "finished", actionFinishName)
+
+def takeChopsticks(philosopherNumber, chopsticks):
+    chopsticks[philosopherNumber].acquire()
+    chopsticks[(philosopherNumber + 1) % len(chopsticks)].acquire()
+
+def releaseChopsticks(philosopherNumber, chopsticks):
+    chopsticks[philosopherNumber].release()
+    chopsticks[(philosopherNumber + 1) % len(chopsticks)].release()
+
+
+def main(n):
+    chopsticks = [threading.Semaphore(1) for _ in range(n + 1)]
+    for i in range(n):
+        threading.Thread(target=philosopher, args=(i, chopsticks)).start()
 
 if __name__ == '__main__':
-    n = 3
-    s = 2
+    n = 5
     if len(sys.argv) > 1:
         n = int(sys.argv[1])
-    if len(sys.argv) > 2:
-        s = int(sys.argv[2])
-    main(n, s)
+    main(n)
