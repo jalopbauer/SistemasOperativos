@@ -5,18 +5,18 @@ USERS_FILE=users
 
 does_the_user_exist() {
   if [ -z "$(grep "$1" "$2")" ]; then
-    return 0 # User does not exist
-  else
     return 1 # User already exists
+  else
+    return 0 # User does not exist
   fi
 }
 
 add_user() {
   if does_the_user_exist "$1" "$2"; then
+    return 1
+  else
     echo $1 >> $2
     return 0
-  else
-    return 1
   fi
 }
 
@@ -61,13 +61,12 @@ case "$1" in
       case "$1" in
         --delete-user)
           if does_the_user_exist "$USERNAME" "$USERS_FILE"; then
-            echo "Not deleting $USERNAME"
-            exit 1
-          else
             echo "Deleting $USERNAME"
             sed -i "/\b$USERNAME\b/d" $USERS_FILE
-            exit 0
-            
+            exit 0            
+          else
+            echo "Not deleting $USERNAME"
+            exit 1
           fi
           shift 1
           ;;
