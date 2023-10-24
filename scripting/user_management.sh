@@ -8,7 +8,7 @@
 # ./user_management.sh --user Indigo --change-password                                                                             
 # ./user_management.sh --user Indigo --add-to-group senior_developer --change-password --remove-from-group junior_developer      
 if [ -z "$1" ]; then
-  echo "Invalid "
+  echo "Invalid running without any parameters"
   exit 1
 fi                      
 case "$1" in
@@ -41,7 +41,7 @@ case "$1" in
     while [[ $# -gt 0 ]]; do
       case "$1" in
         --delete-user)
-          echo "delete user"
+          echo "Deleting $USERNAME"
           shift 1
           ;;
         --add-to-group)
