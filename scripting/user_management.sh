@@ -1,16 +1,11 @@
-#!/bin/sh
-# ./user_management.sh
-# ./user_management.sh --add-user Indigo
-# ./user_management.sh --from-file ./users.csv
-# ./user_management.sh --user Indigo --delete-user
-# ./user_management.sh --user Indigo --add-to-group junior_developer
-# ./user_management.sh --user Indigo --remove-from-group junior_developer
-# ./user_management.sh --user Indigo --change-password                                                                             
-# ./user_management.sh --user Indigo --add-to-group senior_developer --change-password --remove-from-group junior_developer      
+#!/bin/sh    
+# Ensure that the script checks for the necessary permissions before trying to make changes.
+# What are those permissions? 
+
 if [ -z "$1" ]; then
   echo "Invalid running without any parameters"
   exit 1
-fi                      
+fi
 case "$1" in
   --add-user)
     if [ -z "$2" ]; then
@@ -28,7 +23,7 @@ case "$1" in
     fi
     FILE="$2"
     echo "Processing users from file: $FILE"
-    # Add your logic for processing users from the file here
+
     shift 2
     ;;
   --user)
@@ -60,12 +55,12 @@ case "$1" in
           fi
           GROUPNAME="$2"
           echo "Removing $USERNAME from group: $GROUPNAME"
-          # Add your logic for removing a user from a group here
+          
           shift 2
           ;;
         --change-password)
           echo "Changing password for user: $USERNAME"
-          # Add your logic for changing a user's password here
+
           shift 1
           ;;
       esac
@@ -78,3 +73,12 @@ case "$1" in
 esac
 
 echo ""
+
+# ./user_management.sh
+# ./user_management.sh --add-user Indigo
+# ./user_management.sh --from-file ./users.csv
+# ./user_management.sh --user Indigo --delete-user
+# ./user_management.sh --user Indigo --add-to-group junior_developer
+# ./user_management.sh --user Indigo --remove-from-group junior_developer
+# ./user_management.sh --user Indigo --change-password                                                                             
+# ./user_management.sh --user Indigo --add-to-group senior_developer --change-password --remove-from-group junior_developer  

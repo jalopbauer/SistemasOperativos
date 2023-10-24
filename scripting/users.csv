@@ -1,0 +1,6 @@
+alice;add-to-group;developers
+bob;add-to-group;developers
+charlie;add-to-group;testers
+bob;remove-from-group;developers
+bob;change-password
+dave;delete-user
