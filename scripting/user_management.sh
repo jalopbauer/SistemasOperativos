@@ -1,6 +1,7 @@
 #!/bin/sh    
 # Ensure that the script checks for the necessary permissions before trying to make changes.
 # What are those permissions? 
+USERS=users
 
 if [ -z "$1" ]; then
   echo "Invalid running without any parameters"
@@ -14,7 +15,14 @@ case "$1" in
     fi
     NEW_USERNAME="$2"
     echo "Adding $NEW_USERNAME"
-    shift 2
+    if [ -z `grep $NEW_USERNAME users` ]; then
+      echo "Saving user"
+      echo $NEW_USERNAME >> $USERS
+      exit 0
+    else
+      echo "Cannot add new user with username: $NEW_USERNAME because it already exists"
+      exit 1
+    fi
     ;;
   --from-file)
     if [ -z "$2" ]; then
