@@ -11,6 +11,15 @@ does_the_user_exist() {
   fi
 }
 
+add_user() {
+  if does_the_user_exist "$1" "$2"; then
+    echo $1 >> $2
+    return 0
+  else
+    return 1
+  fi
+}
+
 if [ -z "$1" ]; then
   echo "Invalid running without any parameters"
   exit 1
@@ -23,10 +32,8 @@ case "$1" in
       exit 1
     fi
     NEW_USERNAME="$2"
-    echo "Adding $NEW_USERNAME"
-    if does_the_user_exist "$NEW_USERNAME" "$USERS_FILE"; then
-      echo "Saving user"
-      echo $NEW_USERNAME >> $USERS_FILE
+    if add_user "$NEW_USERNAME" "$USERS_FILE"; then
+      echo "Saved user $NEW_USERNAME"
       exit 0
     else
       echo "Cannot add new user with username: $NEW_USERNAME because it already exists"
