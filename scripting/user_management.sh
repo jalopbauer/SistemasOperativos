@@ -60,7 +60,15 @@ case "$1" in
     while [[ $# -gt 0 ]]; do
       case "$1" in
         --delete-user)
-          echo "Deleting $USERNAME"
+          if does_the_user_exist "$USERNAME" "$USERS_FILE"; then
+            echo "Not deleting $USERNAME"
+            exit 1
+          else
+            echo "Deleting $USERNAME"
+            sed -i "/\b$USERNAME\b/d" $USERS_FILE
+            exit 0
+            
+          fi
           shift 1
           ;;
         --add-to-group)
