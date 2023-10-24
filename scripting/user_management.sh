@@ -61,11 +61,11 @@ case "$1" in
       case "$1" in
         --delete-user)
           if does_the_user_exist "$USERNAME" "$USERS_FILE"; then
-            echo "Deleting $USERNAME"
+            echo "Deleting User: $USERNAME"
             sed -i "/\b$USERNAME\b/d" $USERS_FILE
             exit 0            
           else
-            echo "Not deleting $USERNAME"
+            echo "User: $USERNAME does not exist"
             exit 1
           fi
           shift 1
