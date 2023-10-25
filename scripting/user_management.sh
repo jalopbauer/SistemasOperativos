@@ -2,6 +2,7 @@
 # Ensure that the script checks for the necessary permissions before trying to make changes.
 # What are those permissions? 
 USERS_FILE=users
+USERS_GROUPS_FILE=users_group
 
 is_string_included_in_file() {
   if [ -z "$(grep "$1" "$2")" ]; then
@@ -13,6 +14,19 @@ is_string_included_in_file() {
 
 does_the_user_exist() {
   return $(is_string_included_in_file $1 $2)
+}
+
+does_the_user_group_exist() {
+  return $(is_string_included_in_file $1 $2)
+}
+
+add_user_group() {
+  if does_the_user_group_exist "$1;$2" "$3"; then
+    return 1
+  else
+    echo "$1;$2" >> $3
+    return 0
+  fi
 }
 
 add_user() {
@@ -80,7 +94,18 @@ case "$1" in
             exit 1
           fi
           GROUPNAME="$2"
-          echo "Adding $USERNAME to group: $GROUPNAME"
+          if does_the_user_exist "$USERNAME" "$USERS_FILE"; then
+            if add_user_group "$USERNAME" "$GROUPNAME" "$USERS_GROUPS_FILE"; then
+              echo "Saved User: $USERNAME to $GROUPNAME"
+              exit 0
+            else
+              echo "User: $USERNAME already is in Group: $GROUPNAME"
+              exit 1
+            fi           
+          else
+            echo "User: $USERNAME does not exist"
+            exit 1
+          fi
           shift 2
           ;;
         --remove-from-group)
