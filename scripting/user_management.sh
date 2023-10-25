@@ -82,7 +82,6 @@ case "$1" in
           if does_the_user_exist "$USERNAME" "$USERS_FILE"; then
             echo "Deleting User: $USERNAME"
             sed -i "/\b$USERNAME\b/d" $USERS_FILE
-            exit 0            
           else
             echo "User: $USERNAME does not exist"
             exit 1
@@ -98,7 +97,6 @@ case "$1" in
           if does_the_user_exist "$USERNAME" "$USERS_FILE"; then
             if add_user_group "$USERNAME" "$GROUPNAME" "$USERS_GROUPS_FILE"; then
               echo "Added User: $USERNAME to Group: $GROUPNAME"
-              exit 0
             else
               echo "User: $USERNAME already is in Group: $GROUPNAME"
               exit 1
@@ -119,7 +117,6 @@ case "$1" in
             if does_the_user_group_exist "$USERNAME;$GROUPNAME" "$USERS_GROUPS_FILE"; then
               sed -i "/\b$USERNAME;$GROUPNAME\b/d" $USERS_GROUPS_FILE
               echo "Removed User: $USERNAME from Group: $GROUPNAME"
-              exit 0
             else
               echo "User: $USERNAME is not in Group: $GROUPNAME"
               exit 1
@@ -136,7 +133,6 @@ case "$1" in
             read -s PASSWORD
             sed -i "/\b$USERNAME;*\b/d" $USERS_PASSWORDS_FILE
             echo "$USERNAME;$PASSWORD" >> $USERS_PASSWORDS_FILE
-            exit 0            
           else
             echo "User: $USERNAME does not exist"
             exit 1
@@ -152,7 +148,7 @@ case "$1" in
     ;;
 esac
 
-echo ""
+exit 0
 
 # ./user_management.sh
 # ./user_management.sh --add-user Indigo
