@@ -3,12 +3,16 @@
 # What are those permissions? 
 USERS_FILE=users
 
-does_the_user_exist() {
+is_string_included_in_file() {
   if [ -z "$(grep "$1" "$2")" ]; then
     return 1 # User already exists
   else
     return 0 # User does not exist
   fi
+}
+
+does_the_user_exist() {
+  return $(is_string_included_in_file $1 $2)
 }
 
 add_user() {
