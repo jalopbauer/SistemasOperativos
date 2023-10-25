@@ -96,7 +96,7 @@ case "$1" in
           GROUPNAME="$2"
           if does_the_user_exist "$USERNAME" "$USERS_FILE"; then
             if add_user_group "$USERNAME" "$GROUPNAME" "$USERS_GROUPS_FILE"; then
-              echo "Saved User: $USERNAME to $GROUPNAME"
+              echo "Added User: $USERNAME to Group: $GROUPNAME"
               exit 0
             else
               echo "User: $USERNAME already is in Group: $GROUPNAME"
