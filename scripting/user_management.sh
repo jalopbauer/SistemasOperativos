@@ -5,6 +5,16 @@ USERS_FILE=users
 USERS_PASSWORDS_FILE=users_passwords
 USERS_GROUPS_FILE=users_group
 
+if [ "$EUID" -ne 0 ]; then
+    echo "Error: Permission denied. You must run this script as root."
+    exit 1
+fi
+
+if [ -z "$1" ]; then
+  echo "Invalid running without any parameters"
+  exit 1
+fi
+
 is_string_included_in_file() {
   if [ -z "$(grep "$1" "$2")" ]; then
     return 1 # User already exists
@@ -38,11 +48,6 @@ add_user() {
     return 0
   fi
 }
-
-if [ -z "$1" ]; then
-  echo "Invalid running without any parameters"
-  exit 1
-fi
 
 case "$1" in
   --add-user)
