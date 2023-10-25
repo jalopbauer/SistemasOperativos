@@ -2,6 +2,7 @@
 # Ensure that the script checks for the necessary permissions before trying to make changes.
 # What are those permissions? 
 USERS_FILE=users
+USERS_PASSWORDS_FILE=users_passwords
 USERS_GROUPS_FILE=users_group
 
 is_string_included_in_file() {
@@ -130,8 +131,16 @@ case "$1" in
           shift 2
           ;;
         --change-password)
-          echo "Changing password for user: $USERNAME"
-
+          if does_the_user_exist "$USERNAME" "$USERS_FILE"; then
+            echo "Please enter your password: "
+            read -s PASSWORD
+            sed -i "/\b$USERNAME;*\b/d" $USERS_PASSWORDS_FILE
+            echo "$USERNAME;$PASSWORD" >> $USERS_PASSWORDS_FILE
+            exit 0            
+          else
+            echo "User: $USERNAME does not exist"
+            exit 1
+          fi
           shift 1
           ;;
       esac
@@ -151,5 +160,5 @@ echo ""
 # ./user_management.sh --user Indigo --delete-user
 # ./user_management.sh --user Indigo --add-to-group junior_developer
 # ./user_management.sh --user Indigo --remove-from-group junior_developer
-# ./user_management.sh --user Indigo --change-password                                                                             
-# ./user_management.sh --user Indigo --add-to-group senior_developer --change-password --remove-from-group junior_developer  
+# ./user_management.sh --user Indigo --change-password
+# ./user_management.sh --user Indigo --add-to-group senior_developer --change-password --remove-from-group junior_developer
