@@ -114,8 +114,19 @@ case "$1" in
             exit 1
           fi
           GROUPNAME="$2"
-          echo "Removing $USERNAME from group: $GROUPNAME"
-          
+          if does_the_user_exist "$USERNAME" "$USERS_FILE"; then
+            if does_the_user_group_exist "$USERNAME;$GROUPNAME" "$USERS_GROUPS_FILE"; then
+              sed -i "/\b$USERNAME;$GROUPNAME\b/d" $USERS_GROUPS_FILE
+              echo "Removed User: $USERNAME from Group: $GROUPNAME"
+              exit 0
+            else
+              echo "User: $USERNAME is not in Group: $GROUPNAME"
+              exit 1
+            fi            
+          else
+            echo "User: $USERNAME does not exist"
+            exit 1
+          fi
           shift 2
           ;;
         --change-password)
