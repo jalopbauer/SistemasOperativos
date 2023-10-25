@@ -65,8 +65,11 @@ case "$1" in
       exit 1
     fi
     FILE="$2"
-    echo "Processing users from file: $FILE"
-
+      while read LINE; do
+        IFS=';' read -ra FLAGS_AND_PARAMS <<< "$LINE"
+        FLAGS_AND_PARAMS[1]="--${FLAGS_AND_PARAMS[1]}"
+        ./user_management.sh --user ${FLAGS_AND_PARAMS[*]}
+      done <$FILE
     shift 2
     ;;
   --user)
