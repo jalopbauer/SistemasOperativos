@@ -37,7 +37,20 @@ case "$1" in
       sudo dnf install -y $DEPENDENCY
       exit 0
     fi
-
+  ;;
+  remove)
+    if [ -z "$2" ]; then
+      echo "Please provide a dependency"
+      exit 1
+    fi
+    DEPENDENCY="$2"
+    if [ -z "$(grep "$DEPENDENCY" "$REQUIREMENTS_FILE")" ]; then
+      echo "Dependency: $DEPENDENCY already in requirements"
+      exit 1
+    else
+      sed -i "/\b$DEPENDENCY\b/d" $REQUIREMENTS_FILE
+      exit 0
+    fi
   ;;
   help)
     echo "install             : finds the requirements.txt file and installs the missing dependencies"
