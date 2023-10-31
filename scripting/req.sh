@@ -23,8 +23,20 @@ case "$1" in
     fi
     xargs -a $REQUIREMENTS_FILE sudo dnf install -y
     ;;
-  verify)
-    echo "$1"
+  add)
+    if [ -z "$2" ]; then
+      echo "Please provide a dependency"
+      exit 1
+    fi
+    DEPENDENCY="$2"
+    if [ ! -z "$(grep "$DEPENDENCY" "$REQUIREMENTS_FILE")" ]; then
+      echo "Dependency: $DEPENDENCY already in requirements"
+      exit 1
+    else
+      echo $DEPENDENCY >> $REQUIREMENTS_FILE
+      sudo dnf install -y $DEPENDENCY
+      exit 0
+    fi
 
   ;;
   help)
