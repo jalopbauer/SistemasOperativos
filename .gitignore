@@ -7,3 +7,4 @@ users_group
 users_passwords
 requirements.txt
 .idea
+test/done/
