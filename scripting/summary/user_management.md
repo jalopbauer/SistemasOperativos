@@ -1,5 +1,9 @@
 # User Management
 ## User
+### Add user
+```shell
+useradd -m "$username"
+```
 ### Check if user exists
 ```bash
 id "$username" &>/dev/null
@@ -8,7 +12,7 @@ id "$username" &>/dev/null
 ```bash
 userdel -r "$username"
 ```
-### Delete user password
+### Change user password
 ```shell
 passwd $username
 ```
