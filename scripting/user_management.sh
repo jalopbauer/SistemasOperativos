@@ -1,9 +1,4 @@
 #!/bin/bash
-# Ensure that the script checks for the necessary permissions before trying to make changes.
-# What are those permissions? 
-USERS_FILE=users
-USERS_PASSWORDS_FILE=users_passwords
-USERS_GROUPS_FILE=users_group
 
 if [ "$EUID" -ne 0 ]; then
     echo "Error: Permission denied. You must run this script as root."
@@ -15,94 +10,84 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-exit_if_username_not_set() {
+exit_if_variable_not_set() {
   if [ -z "$2" ]; then
     echo "$1"
     exit 1
   fi
 }
 
-exit_if_username_exists() {
+exit_if_user_name_variable_not_set () {
+  exit_if_variable_not_set "Please provide a user name after '--add-user' flag." $1
+}
+
+
+exit_if_group_name_variable_not_set () {
+  exit_if_variable_not_set "Please provide a group name after '--add-to-group' flag." $1
+}
+
+exit_if_user_exists() {
   if id "$1" &>/dev/null; then
     echo "Username: $1 already exists"
     exit 1
   fi
 }
 
-exit_if_username_does_not_exist() {
+exit_if_user_does_not_exist() {
   if ! id "$1" &>/dev/null; then
     echo "Username: $1 does not exist"
     exit 1
   fi
 }
 
+exit_if_group_exists() {
+  if grep -q "$1" /etc/group; then
+    echo "Group: $1 does not exist"
+    exit 1
+  fi
+}
+
+exit_if_group_does_not_exist() {
+  if ! grep -q "$1" /etc/group; then
+    echo "Group: $1 does not exist"
+    exit 1
+  fi
+}
+
 case "$1" in
   --add-user)
-    username="$2"
-    exit_if_username_not_set "Please provide a username after '--add-user' flag." $username
-    exit_if_username_exists $username
-    useradd -m "$username"
+    user_name="$2"
+    exit_if_user_name_variable_not_set  $user_name
+    exit_if_user_exists $user_name
+    useradd -m "$user_name"
     ;;
   --user)
-    username="$2"
-    exit_if_username_not_set "Please provide a username after '--add-user' flag." $username
+    user_name="$2"
+    exit_if_user_name_variable_not_set $user_name
+    exit_if_user_does_not_exist $user_name
     shift 2
     while [[ $# -gt 0 ]]; do
       case "$1" in
         --delete-user)
-          exit_if_username_does_not_exist $username
-          userdel -r $username
+          userdel -r $user_name
           shift 1
           ;;
         --add-to-group)
-          if [ -z "$2" ]; then
-            echo "Please provide a group name after '--add-to-group' flag."
-            exit 1
-          fi
-          GROUPNAME="$2"
-          if does_the_user_exist "$USERNAME" "$USERS_FILE"; then
-            if add_user_group "$USERNAME" "$GROUPNAME" "$USERS_GROUPS_FILE"; then
-              echo "Added User: $USERNAME to Group: $GROUPNAME"
-            else
-              echo "User: $USERNAME already is in Group: $GROUPNAME"
-              exit 1
-            fi           
-          else
-            echo "User: $USERNAME does not exist"
-            exit 1
-          fi
+          group_name="$2"
+          exit_if_group_name_variable_not_set  $group_name
+          exit_if_group_does_not_exist $group_name
+          gpasswd -a "$user_name" "$group_name"
           shift 2
           ;;
         --remove-from-group)
-          if [ -z "$2" ]; then
-            echo "Please provide a group name after '--remove-from-group' flag."
-            exit 1
-          fi
-          GROUPNAME="$2"
-          if does_the_user_exist "$USERNAME" "$USERS_FILE"; then
-            if does_the_user_group_exist "$USERNAME;$GROUPNAME" "$USERS_GROUPS_FILE"; then
-              sed -i "/\b$USERNAME;$GROUPNAME\b/d" $USERS_GROUPS_FILE
-              echo "Removed User: $USERNAME from Group: $GROUPNAME"
-            else
-              echo "User: $USERNAME is not in Group: $GROUPNAME"
-              exit 1
-            fi            
-          else
-            echo "User: $USERNAME does not exist"
-            exit 1
-          fi
+          group_name="$2"
+          exit_if_group_name_variable_not_set  $group_name
+          exit_if_group_does_not_exist $group_name
+          gpasswd -d "$username" "$groupname"
           shift 2
           ;;
         --change-password)
-          if does_the_user_exist "$USERNAME" "$USERS_FILE"; then
-            echo "Please enter your password: "
-            read -s PASSWORD
-            sed -i "/\b$USERNAME;*\b/d" $USERS_PASSWORDS_FILE
-            echo "$USERNAME;$PASSWORD" >> $USERS_PASSWORDS_FILE
-          else
-            echo "User: $USERNAME does not exist"
-            exit 1
-          fi
+          passwd $user_name
           shift 1
           ;;
       esac
@@ -114,13 +99,28 @@ case "$1" in
     ;;
 esac
 
-exit 0
+#sudo ./user_management.sh
+#
+#sudo ./user_management.sh --add-user
+#sudo ./user_management.sh --add-user $USERNAME
+#sudo ./user_management.sh --add-user Indigo
+#
+#sudo ./user_management.sh --user
+#
+#sudo groupadd junior_developer
+#sudo ./user_management.sh --user Indigo --add-to-group
+#sudo ./user_management.sh --user Indigo --add-to-group group_that_does_not_exist
+#sudo ./user_management.sh --user Indigo --add-to-group junior_developer
+#
+#sudo ./user_management.sh --user Indigo --remove-from-group
+#sudo ./user_management.sh --user Indigo --remove-from-group group_that_does_not_exist
+#sudo ./user_management.sh --user Indigo --remove-from-group junior_developer
+#
+#sudo ./user_management.sh --user Indigo --change-password
+#
+#sudo ./user_management.sh --user Indigo --add-to-group senior_developer --change-password --remove-from-group junior_developer
+#
+#sudo ./user_management.sh --user Indigo --delete-user
 
-# ./user_management.sh
-# ./user_management.sh --add-user Indigo
-# ./user_management.sh --from-file ./users.csv
-# ./user_management.sh --user Indigo --delete-user
-# ./user_management.sh --user Indigo --add-to-group junior_developer
-# ./user_management.sh --user Indigo --remove-from-group junior_developer
-# ./user_management.sh --user Indigo --change-password
-# ./user_management.sh --user Indigo --add-to-group senior_developer --change-password --remove-from-group junior_developer
+## Clear all from before
+#sudo ./user_management.sh --user Indigo --remove-from-group senior_developer
