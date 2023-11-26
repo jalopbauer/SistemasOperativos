@@ -1,4 +1,4 @@
-#!/bin/sh    
+#!/bin/bash
 # Ensure that the script checks for the necessary permissions before trying to make changes.
 # What are those permissions? 
 USERS_FILE=users
@@ -15,85 +15,43 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-is_string_included_in_file() {
-  if [ -z "$(grep "$1" "$2")" ]; then
-    return 1 # User already exists
-  else
-    return 0 # User does not exist
+exit_if_username_not_set() {
+  if [ -z "$2" ]; then
+    echo "$1"
+    exit 1
   fi
 }
 
-does_the_user_exist() {
-  return $(is_string_included_in_file $1 $2)
-}
-
-does_the_user_group_exist() {
-  return $(is_string_included_in_file $1 $2)
-}
-
-add_user_group() {
-  if does_the_user_group_exist "$1;$2" "$3"; then
-    return 1
-  else
-    echo "$1;$2" >> $3
-    return 0
+exit_if_username_exists() {
+  if id "$1" &>/dev/null; then
+    echo "Username: $1 already exists"
+    exit 1
   fi
 }
 
-add_user() {
-  if does_the_user_exist "$1" "$2"; then
-    return 1
-  else
-    echo $1 >> $2
-    return 0
+exit_if_username_does_not_exist() {
+  if ! id "$1" &>/dev/null; then
+    echo "Username: $1 does not exist"
+    exit 1
   fi
 }
 
 case "$1" in
   --add-user)
-    if [ -z "$2" ]; then
-      echo "Please provide a username after '--add-user' flag."
-      exit 1
-    fi
-    NEW_USERNAME="$2"
-    if add_user "$NEW_USERNAME" "$USERS_FILE"; then
-      echo "Saved user $NEW_USERNAME"
-      exit 0
-    else
-      echo "Cannot add new user with username: $NEW_USERNAME because it already exists"
-      exit 1
-    fi
-    ;;
-  --from-file)
-    if [ -z "$2" ]; then
-      echo "Please provide a file path after '--from-file' flag."
-      exit 1
-    fi
-    FILE="$2"
-      while read LINE; do
-        IFS=';' read -ra FLAGS_AND_PARAMS <<< "$LINE"
-        FLAGS_AND_PARAMS[1]="--${FLAGS_AND_PARAMS[1]}"
-        ./user_management.sh --user ${FLAGS_AND_PARAMS[*]}
-      done <$FILE
-    shift 2
+    username="$2"
+    exit_if_username_not_set "Please provide a username after '--add-user' flag." $username
+    exit_if_username_exists $username
+    useradd -m "$username"
     ;;
   --user)
-    if [ -z "$2" ]; then
-      echo "Please provide a username after '--user' flag."
-      exit 1
-    fi
-    USERNAME="$2"
+    username="$2"
+    exit_if_username_not_set "Please provide a username after '--add-user' flag." $username
     shift 2
     while [[ $# -gt 0 ]]; do
       case "$1" in
         --delete-user)
-          if does_the_user_exist "$USERNAME" "$USERS_FILE"; then
-            echo "Deleting User: $USERNAME"
-            sed -i "/\b$USERNAME\b/d" $USERS_FILE
-          else
-            echo "User: $USERNAME does not exist"
-            exit 1
-          fi
+          exit_if_username_does_not_exist $username
+          userdel -r $username
           shift 1
           ;;
         --add-to-group)
