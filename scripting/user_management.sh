@@ -74,16 +74,16 @@ case "$1" in
           ;;
         --add-to-group)
           group_name="$2"
-          exit_if_group_name_variable_not_set  $group_name
+          exit_if_group_name_variable_not_set $group_name
           exit_if_group_does_not_exist $group_name
           gpasswd -a "$user_name" "$group_name"
           shift 2
           ;;
         --remove-from-group)
           group_name="$2"
-          exit_if_group_name_variable_not_set  $group_name
+          exit_if_group_name_variable_not_set $group_name
           exit_if_group_does_not_exist $group_name
-          gpasswd -d "$username" "$groupname"
+          gpasswd -d "$user_name" "$group_name"
           shift 2
           ;;
         --change-password)
