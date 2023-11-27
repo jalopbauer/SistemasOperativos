@@ -61,6 +61,18 @@ case "$1" in
     exit_if_user_exists $user_name
     useradd -m "$user_name"
     ;;
+  --add-group)
+    group_name="$2"
+    exit_if_group_name_variable_not_set  $group_name
+    exit_if_group_exists $group_name
+    groupadd -m "$group_name"
+    ;;
+  --delete-group)
+    group_name="$2"
+    exit_if_group_name_variable_not_set  $group_name
+    exit_if_group_does_not_exist $group_name
+    groupdel -m "$group_name"
+    ;;
   --user)
     user_name="$2"
     exit_if_user_name_variable_not_set $user_name

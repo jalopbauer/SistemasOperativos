@@ -2,30 +2,42 @@
 ## User
 ### Add user
 ```shell
-useradd -m "$username"
+useradd -m "$USER_NAME"
 ```
 ### Check if user exists
-```bash
-id "$username" &>/dev/null
+```shell
+id "$USER_NAME" &>/dev/null
 ```
 ### Delete user
-```bash
-userdel -r "$username"
+```shell
+userdel -r "$USER_NAME"
 ```
 ### Change user password
 ```shell
-passwd $username
+passwd $USER_NAME
+```
+### Check if user is in group
+```shell
+groups $USER_NAME | grep -q $GROUP_NAME
+```
+### Add user to group
+```shell 
+gpasswd -a "$GROUP_NAME" "$USER_NAME"
+```
+### Delete user from group
+```shell
+gpasswd -d "$USER_NAME" "$GROUP_NAME"
 ```
 ## Group
 ### Check if group exists
-```bash
-grep -q "$groupname" /etc/group
+```shell
+grep -q "$GROUP_NAME" /etc/group
 ```
-### Add user to group
-```bash 
-usermod -aG "$groupname" "$username"
+### Add group
+```shell
+groupadd $GROUP_NAME
 ```
-### Delete user from group
-```bash
-gpasswd -d "$username" "$groupname"
+### Delete group
+```shell
+groupdel $GROUP_NAME
 ```

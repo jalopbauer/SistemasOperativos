@@ -4,21 +4,30 @@
 ```shell
 ```
 ### Check if user exists
-```bash
+```shell
 ```
 ### Delete user
-```bash
+```shell
 ```
 ### Change user password
 ```shell
 ```
-## Group
-### Check if group exists
-```bash
+### Check user is in group
+```shell
 ```
 ### Add user to group
-```bash 
+```shell 
 ```
 ### Delete user from group
-```bash
+```shell
+```
+## Group
+### Check if group exists
+```shell
+```
+### Add group
+```shell
+```
+### Delete group
+```shell
 ```
