@@ -14,15 +14,15 @@ userdel -r "$USER_NAME"
 ```
 ### Change user password
 ```shell
-passwd $USER_NAME
+passwd "$USER_NAME"
 ```
 ### Check if user is in group
 ```shell
-groups $USER_NAME | grep -q $GROUP_NAME
+groups "$USER_NAME" | grep -q "$GROUP_NAME"
 ```
 ### Add user to group
 ```shell 
-gpasswd -a "$GROUP_NAME" "$USER_NAME"
+gpasswd -a "$USER_NAME" "$GROUP_NAME"
 ```
 ### Delete user from group
 ```shell
@@ -35,9 +35,9 @@ grep -q "$GROUP_NAME" /etc/group
 ```
 ### Add group
 ```shell
-groupadd $GROUP_NAME
+groupadd "$GROUP_NAME"
 ```
 ### Delete group
 ```shell
-groupdel $GROUP_NAME
+groupdel "$GROUP_NAME"
 ```

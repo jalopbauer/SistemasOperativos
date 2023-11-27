@@ -12,7 +12,7 @@
 ### Change user password
 ```shell
 ```
-### Check user is in group
+### Check if user is in group
 ```shell
 ```
 ### Add user to group
